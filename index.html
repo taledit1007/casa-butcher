@@ -382,6 +382,8 @@ html.cine .arrows{display:grid;gap:12px;position:absolute;right:1.4vw;top:50%;tr
 .promo3 em{position:relative;display:inline-block;font-size:1.35em;color:#fff;padding:.02em .32em .08em;background:#c4162a;transform:rotate(-3deg);
  clip-path:polygon(2% 12%,10% 3%,24% 8%,40% 1%,58% 6%,76% 0,92% 7%,100% 3%,97% 30%,100% 55%,96% 78%,99% 97%,82% 93%,64% 100%,45% 94%,27% 100%,11% 93%,0 98%,3% 70%,0 45%)}
 .promo3 em svg{display:none}
+.extras .promo3{margin:56px calc(-1*var(--gut)) 0 calc(-1*var(--gut-r))}
+@media(min-width:1000px){.extras .promo3 p{flex-wrap:nowrap;font-size:clamp(20px,2.1vw,34px)}}
 .promo3 img{flex:none;width:clamp(96px,24vw,330px);aspect-ratio:3/2;object-fit:cover;-webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent),linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
 @media(max-width:600px){.tabs{gap:5px}.tabs button{padding:10px 2px 8px}.promo3 .sep{display:none}.catalog>header h2{font-size:7.6vw;white-space:nowrap;gap:10px}.catalog>header h2::before,.catalog>header h2::after{width:7vw}}
 /* phone: the same pinned scroll showcase, photo above and details below */
@@ -461,11 +463,6 @@ html.cine .rail,html.cine .arrows{display:none}
   <div class="tabs" role="tablist" id="tabs"></div>
 </section>
 
-<aside class="promo3" aria-label="מבצע">
-  <p><span>בקניית בשר טרי ב-<b class="num">₪600</b></span><i class="sep"></i><span>סט מנות ראשונות</span><em><svg viewBox="0 0 60 22" aria-hidden="true"><path d="M8 20L3 9M22 17L19 3M38 17l3-14M52 20l5-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg><span>בחינם</span></em></p>
-  <img alt="" data-img="starters" loading="lazy">
-</aside>
-
 <!-- 4 · CATALOG -->
 <section class="catalog">
   <header><h2 id="catTitle">בשר טרי לפי משקל</h2><p>כל המחירים הם לקילוגרם. פריטים המסומנים * הם ללא הנחה.</p></header>
@@ -474,6 +471,10 @@ html.cine .rail,html.cine .arrows{display:none}
     <h3>מנות ראשונות ורטבים</h3>
     <div class="xwrap"><figure class="plate dark xphoto"><img class="dark" alt="סט מנות ראשונות: צ׳ילי קונקרנה, אורז לבן, תפוחי אדמה, סלט הבית, צ׳ימיצ׳ורי ושום קונפי" data-img="starters" loading="lazy"></figure>
     <div id="extrasHost"></div></div>
+<aside class="promo3" aria-label="מבצע">
+  <p><span>בקניית בשר טרי ב-<b class="num">₪600</b></span><i class="sep"></i><span>סט מנות ראשונות</span><em><svg viewBox="0 0 60 22" aria-hidden="true"><path d="M8 20L3 9M22 17L19 3M38 17l3-14M52 20l5-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/></svg><span>בחינם</span></em></p>
+  <img alt="" data-img="starters" loading="lazy">
+</aside>
   </div>
 </section>
 
