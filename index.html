@@ -219,7 +219,7 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .end-logo{display:block;width:min(240px,56vw);height:auto;margin:0 auto 40px}
 .end h2 em{font-style:normal;color:var(--wine)}
 .end>p{font-weight:300;font-size:18px;margin:26px auto 30px;max-width:28em}
-.facts{display:grid;gap:22px;margin:88px auto 0;max-width:1100px;padding:30px 0;border-top:1px solid var(--line-dark);text-align:right}
+.facts{display:grid;gap:22px;margin:88px auto 0;max-width:1100px;padding:30px 0;border-top:1px solid var(--line-dark);text-align:center}
 .facts dt{font-size:12px;letter-spacing:.14em;color:var(--muted-dark)}
 .facts dd{margin:4px 0 0;font-size:17px}
 .facts dd i{font-style:normal;opacity:.5}
@@ -293,6 +293,7 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .sent{font-size:14px;margin-top:12px;padding:10px 12px;background:var(--bone-2);border-right:0}
 
 /* ---------- spec sheet ---------- */
+.specbtn[hidden]{display:none}
 .specbtn{position:fixed;z-index:35;right:var(--gut-r);bottom:calc(78px + env(safe-area-inset-bottom,0px));height:38px;padding:0 16px;border-radius:20px;background:var(--bone);color:var(--ink);font-size:13px;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.3)}
 .spec{position:fixed;inset:0;z-index:90;background:var(--bone);color:var(--ink);overflow-y:auto;padding:calc(28px + env(safe-area-inset-top,0px)) var(--gut-r) 80px var(--gut)}
 .spec-in{max-width:1080px;margin:0 auto}
@@ -488,7 +489,7 @@ html.cine .rail,html.cine .arrows{display:none}
   <dl class="facts">
     <div><dt>כתובת</dt><dd>דרך הערבה 23, אילת<br>מתחם מלון איסלה בראון</dd></div>
     <div><dt>שעות פתיחה</dt><dd>ראשון – שבת<br><span class="num">12:00 – 23:00</span></dd></div>
-    <div><dt>טלפון להזמנות</dt><dd class="num" style="direction:ltr;text-align:right">08-6323032</dd></div>
+    <div><dt>טלפון להזמנות</dt><dd class="num" style="direction:ltr;text-align:center">08-6323032</dd></div>
   </dl>
   <div class="foot">CASA DO BRASIL</div>
 </section>
@@ -520,7 +521,7 @@ html.cine .rail,html.cine .arrows{display:none}
   </footer>
 </aside>
 
-<button class="specbtn" id="specBtn">מפרט עיצוב ותנועה</button>
+<button class="specbtn" id="specBtn" hidden>מפרט עיצוב ותנועה</button>
 <div class="spec" id="spec" hidden>
  <div class="spec-in">
   <div class="spec-top"><div><div class="typ-b" style="font-size:12px">CASA DO BRASIL · DESIGN SPEC</div><h2>Big meat.<br>Small details.</h2></div><button class="x" id="specClose" aria-label="סגירת המפרט">×</button></div>
