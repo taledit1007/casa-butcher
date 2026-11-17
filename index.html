@@ -185,13 +185,13 @@ h1,h2,h3{font-weight:900;line-height:1;letter-spacing:-.01em;text-wrap:balance}
 @media(min-width:1100px){.promo2 p{flex-wrap:nowrap;white-space:nowrap;font-size:clamp(22px,2.05vw,46px)}.promo2 p span:last-child{flex-basis:auto}.promo2 p .sep:last-of-type{display:block}}
 /* wall relief from the restaurant, kept as a quiet backdrop behind the hero copy */
 .bgart{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.bgart img{position:absolute;top:0;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease}
+.bgart img{position:absolute;top:0;height:100%;object-fit:cover;opacity:0;filter:brightness(1.25);transition:opacity .7s ease}
 .bgart .fr{right:0;width:min(100%,53vh);object-position:100% 50%;
  -webkit-mask-image:linear-gradient(to left,#000 30%,transparent),linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(to left,#000 30%,transparent),linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
 .bgart .fl{left:0;width:min(100%,46vh);object-position:0% 50%;
  -webkit-mask-image:linear-gradient(to right,#000 30%,transparent),linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(to right,#000 30%,transparent),linear-gradient(to bottom,transparent,#000 22%,#000 78%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
-.bgart:not(.alt) .fr,.bgart.alt .fl{opacity:.16}
-html.cine .bgart:not(.alt) .fr,html.cine .bgart.alt .fl{opacity:.26}
+.bgart:not(.alt) .fr,.bgart.alt .fl{opacity:.25}
+html.cine .bgart:not(.alt) .fr,html.cine .bgart.alt .fl{opacity:.36}
 @media(prefers-reduced-motion:reduce){.bgart img{transition:none}}
 /* phone: two products per row */
 @media(max-width:899px){
