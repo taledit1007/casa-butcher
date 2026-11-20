@@ -282,6 +282,29 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .addon-skip{height:44px;font-size:15px;color:#a39c93;text-decoration:underline}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes sheetIn{from{transform:translateY(40px);opacity:0}}
+.plate:not(.empty){cursor:zoom-in}
+.zoom .addon-box{position:relative;width:min(560px,100%);max-height:92svh;overflow:auto}
+.zoom .x{position:absolute;top:10px;left:10px;width:44px;height:44px;font-size:30px;line-height:1;color:#f3efe8;z-index:2}
+.zbig{display:block;width:100%;aspect-ratio:4/3;max-height:48svh;object-fit:contain;margin:-6px 0 2px}
+.zoom h2{margin-top:0}
+.zoom .price,.zoom .price b{color:#f3efe8}
+.zoom .step{border-color:rgba(243,239,232,.3);color:#f3efe8}
+.zoom .step span{color:#f3efe8}
+.gpop .addon-box .btn{width:auto}
+.zoom p{font-size:15px;color:#cfc8be;line-height:1.5}
+.zoom .buy{margin:0}
+.gpop{place-items:center;z-index:95;padding:16px}
+.gpop .addon-box{width:min(420px,100%);border:1px solid #c4162a;border-top:2px solid #c4162a;border-radius:6px;padding:0 0 20px;overflow:hidden;text-align:center;animation:giftIn .55s cubic-bezier(.2,1.4,.4,1)}
+.gpop img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
+.gpop .addon-box>*:not(img){margin-inline:22px}
+.gpop small{color:#e2394b;font-weight:700;font-size:14px;letter-spacing:.06em;margin-top:6px}
+.gpop h2{margin-top:-6px}
+.gpop p{font-size:15px;color:#cfc8be;line-height:1.5}
+.gpop .gp{display:flex;justify-content:center;align-items:center;gap:12px;font-size:20px}
+.gpop .gp s{color:#a39c93}
+.gpop .gp b{background:#c4162a;color:#fff;padding:3px 12px;border-radius:3px;font-weight:900;transform:rotate(-3deg)}
+@keyframes giftIn{0%{transform:scale(.7);opacity:0}100%{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.gpop .addon-box{animation:none}}
 @media(min-width:900px){.addon{place-items:center}.addon-box{border:1px solid rgba(243,239,232,.2);border-top:2px solid #c4162a;border-radius:4px;padding:30px 28px}}
 .emptycart{padding:56px 0;text-align:center;color:var(--muted)}
 .emptycart b{display:block;font-size:24px;color:var(--ink);font-weight:900;margin-bottom:6px}
@@ -510,6 +533,18 @@ html.cine .rail,html.cine .arrows{display:none}
     <button class="addon-skip" id="addonSkip">בלי תוספות</button>
   </div>
 </div>
+<div class="addon zoom" id="zoom" role="dialog" aria-modal="true" aria-labelledby="zoomTitle" tabindex="-1" hidden><div class="addon-box" id="zoomBox"></div></div>
+<div class="addon gpop" id="gpop" role="dialog" aria-modal="true" aria-labelledby="gpopTitle" tabindex="-1" hidden>
+  <div class="addon-box">
+    <img alt="סט מנות ראשונות" data-img="starters">
+    <small>מגיע לכם!</small>
+    <h2 id="gpopTitle">סט מנות ראשונות במתנה, עלינו</h2>
+    <p>עברתם ₪600 בשר טרי, אז הפתיחה עלינו: צ׳ילי קונקרנה, אורז לבן, תפו״א אפוי, סלט הבית וצ׳ימיצ׳ורי. הסט נוסף לשובר שלכם.</p>
+    <div class="gp num"><s>‎₪79</s><b>מתנה</b></div>
+    <button class="btn" id="gpopOk">מעולה, תודה!</button>
+    <button class="addon-skip" id="gpopCart">לשובר ההזמנה</button>
+  </div>
+</div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
   <header><div><small>CASA DO BRASIL</small><h2 id="drawerTitle">שובר הזמנה</h2></div><button class="x" id="closeDrawer" aria-label="סגירה">×</button></header>
   <ul class="lines" id="lines"></ul>
@@ -607,7 +642,7 @@ EXTRA[0].img='starters';
 const ADDON=[X('x_bun','לחמניית המבורגר',5,'','תוספות להמבורגר'),X('x_veg','ירקות להמבורגר',12,'','תוספות להמבורגר')], XLIST=[...EXTRA,...ADDON], ao={x_bun:0,x_veg:0}; ADDON[0].img='bun'; ADDON[1].img='veg'; ADDON[0].dark=ADDON[1].dark=true;
 function openAddon(){ao.x_bun=ao.x_veg=0; aoShow(); $('#toast').classList.remove('in'); $('#addon').hidden=false; $('#addon').focus()}
 function aoShow(){for(const k in ao) $(`[data-ao="${k}"] span`).textContent=ao[k]; const s=ao.x_bun*5+ao.x_veg*12; $('#addonOk').textContent=s?`הוספה לשובר · ${nis(s)}`:'הוספה לשובר'; $('#addonOk').disabled=!s; $('#addonOk').style.opacity=s?1:.4}
-function closeAddon(save){if(save){for(const k in ao) if(ao[k]) cart.set(k,(cart.get(k)||0)+ao[k]); renderCart()} $('#addon').hidden=true}
+function closeAddon(save){if(save){for(const k in ao) if(ao[k]) cart.set(k,(cart.get(k)||0)+ao[k]); renderCart()} $('#addon').hidden=true; if(showGift.wait) setTimeout(showGift,250)}
 const SHOP=[...CUTS,...MORE], ALL=[...SHOP,...EXTRA,...ADDON], BY=Object.fromEntries(ALL.map(p=>[p.id,p]));
 const IC=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const CAT_IC={
@@ -666,6 +701,7 @@ function renderCart(){
   :'<li style="display:block;border:0"><div class="emptycart"><b>השובר ריק</b>בחרו נתח והוסיפו אותו להזמנה.</div></li>';
  const gift=meat>=600;
  $('#lines').innerHTML=rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
+ if(gift&&!renderCart.had&&!renderCart.shown){renderCart.shown=true; setTimeout(showGift,350)}
  renderCart.had=gift;
  $('#total').textContent=nis(sum);
  $('#note').textContent=(n?(meat<600?`עוד ${nis(600-meat)} לסט מנות ראשונות בחינם, בקניית בשר טרי ב-₪600. `:'סט המנות הראשונות נוסף להזמנה במתנה. '):'')+'המחיר הוא לקילוגרם. המשקל הסופי עשוי להשתנות מעט.';
@@ -680,11 +716,20 @@ function add(id,btn){
  $('#toastMsg').textContent=`${BY[id].name} · ${fmt(BY[id],q)} נוסף לשובר`; $('#toast').classList.add('in'); clearTimeout(toastT); toastT=setTimeout(()=>$('#toast').classList.remove('in'),3200);
 }
 let lastFocus;
+function openZoom(id){const p=BY[id]; if(!p||!p.img) return; lastFocus=document.activeElement; pick[id]=pick[id]||1;
+ $('#zoomBox').innerHTML=`<button class="x" id="zoomClose" aria-label="סגירה">×</button><img class="zbig ${tn(p)}" src="${IMG[p.img]}" alt="${p.name}">${tagHTML(p)}<h2 id="zoomTitle">${p.name}</h2>${priceHTML(p)}${p.desc?`<p>${p.desc}</p>`:''}${buyHTML(p)}`;
+ $('#zoomBox [data-q]').textContent=fmt(p,pick[id]); $('#toast').classList.remove('in'); $('#zoom').hidden=false; $('#zoom').focus()}
+function closeZoom(){$('#zoom').hidden=true; lastFocus&&lastFocus.focus&&lastFocus.focus()}
+function showGift(){ if(!$('#addon').hidden||!$('#zoom').hidden){showGift.wait=true; return} showGift.wait=false; $('#toast').classList.remove('in'); $('#gpop').hidden=false; $('#gpop').focus()}
+function closeGift(){$('#gpop').hidden=true}
 function openDrawer(){lastFocus=document.activeElement; $('#toast').classList.remove('in'); $('#drawer').classList.add('in'); $('#scrim').classList.add('in'); $('#drawer').focus()}
 function closeDrawer(){$('#drawer').classList.remove('in'); $('#scrim').classList.remove('in'); lastFocus&&lastFocus.focus&&lastFocus.focus()}
 document.addEventListener('click',e=>{
  const t=e.target.closest('button,a'); if(!t) return;
- if(t.dataset.add){add(t.dataset.add,t); if(t.dataset.add==='burger') openAddon(); return}
+ if(t.dataset.add){const z=!$('#zoom').hidden; add(t.dataset.add,t); if(z) setTimeout(()=>{closeZoom(); if(showGift.wait) showGift()},z&&t.dataset.add==='burger'?0:650); if(t.dataset.add==='burger') setTimeout(openAddon,z?10:0); return}
+ if(t.id==='zoomClose') return closeZoom();
+ if(t.id==='gpopOk') return closeGift();
+ if(t.id==='gpopCart'){closeGift(); return openDrawer()}
  if(t.id==='heroGo'&&small){e.preventDefault(); $('#catalog').scrollIntoView({behavior:'smooth'}); return}
  if(t.id==='addonOk') return closeAddon(true);
  if(t.id==='addonSkip') return closeAddon(false);
@@ -707,7 +752,10 @@ document.addEventListener('click',e=>{
 });
 $('#scrim').addEventListener('click',closeDrawer);
 $('#addon').addEventListener('click',e=>{if(e.target.id==='addon') closeAddon(false)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
+$('#zoom').addEventListener('click',e=>{if(e.target.id==='zoom') closeZoom()});
+$('#gpop').addEventListener('click',e=>{if(e.target.id==='gpop') closeGift()});
+$('#grid').addEventListener('click',e=>{const pl=e.target.closest('.plate:not(.empty)'); if(!pl) return; const a=pl.closest('.prod'), b=a&&a.querySelector('[data-add]'); if(b) openZoom(b.dataset.add)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
 
 // ----- scroll choreography -----
 const root=document.documentElement, mqW=matchMedia('(min-width:900px)'), mqM=matchMedia('(prefers-reduced-motion:reduce)');
