@@ -311,6 +311,10 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .drawer footer{padding:18px 26px 24px;border-top:1px solid var(--ink)}
 .tot{display:flex;justify-content:space-between;align-items:baseline;font-size:15px}
 .tot b{font-size:30px;font-weight:900}
+.res{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:14px;cursor:pointer}
+.res input{flex:none;width:20px;height:20px;accent-color:#c4162a;cursor:pointer}
+.tot.disc{font-size:14px;color:#e8a0a8;margin-bottom:4px}.tot.disc b{font-size:18px}.tot.disc[hidden]{display:none}
+.resident{margin:26px auto 0;font-size:17px;color:#f3efe8}.resident b{color:#c4162a;font-weight:900;font-size:1.25em}
 .note{font-size:12.5px;color:var(--muted);margin:8px 0 16px}
 .drawer footer .btn{width:100%}
 .sent{font-size:14px;margin-top:12px;padding:10px 12px;background:var(--bone-2);border-right:0}
@@ -509,6 +513,7 @@ html.cine .rail,html.cine .arrows{display:none}
   <h2>בשר מובחר <em>ביישון ביתי.</em></h2>
   <p>כל הנתחים מוכנים לפי הזמנה. המחיר הוא לקילוגרם. המשקל הסופי עשוי להשתנות מעט.</p>
   <button class="btn" data-open>לשובר ההזמנה</button>
+  <p class="resident">תושבי אילת? <b class="num">20%</b> הנחה בהצגת תעודת תושב</p>
   <dl class="facts">
     <div><dt>כתובת</dt><dd>דרך הערבה 23, אילת<br>מתחם מלון איסלה בראון</dd></div>
     <div><dt>שעות פתיחה</dt><dd>ראשון – שבת<br><span class="num">12:00 – 23:00</span></dd></div>
@@ -549,6 +554,8 @@ html.cine .rail,html.cine .arrows{display:none}
   <header><div><small>CASA DO BRASIL</small><h2 id="drawerTitle">שובר הזמנה</h2></div><button class="x" id="closeDrawer" aria-label="סגירה">×</button></header>
   <ul class="lines" id="lines"></ul>
   <footer>
+    <label class="res"><input type="checkbox" id="resChk"><span><b>תושב/ת אילת?</b> <span class="num">20%</span> הנחה בהצגת תעודת תושב</span></label>
+    <div class="tot disc" id="discRow" hidden><span>הנחת תושב <span class="num">20%</span></span><b class="num" id="disc" dir="ltr">₪0</b></div>
     <div class="tot"><span>סיכום משוער</span><b class="num" id="total">₪0</b></div>
     <p class="note" id="note"></p>
     <button class="btn" id="send">שליחת בקשת הזמנה</button>
@@ -703,11 +710,14 @@ function renderCart(){
  $('#lines').innerHTML=rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
  if(gift&&!renderCart.had) setTimeout(showGift,350);
  renderCart.had=gift;
- $('#total').textContent=nis(sum);
+ const res=$('#resChk').checked, off=res?Math.round(sum*.2):0;
+ $('#discRow').hidden=!(res&&sum); $('#disc').textContent='−'+nis(off);
+ $('#total').textContent=nis(sum-off);
  $('#note').textContent=(n?(meat<600?`עוד ${nis(600-meat)} לסט מנות ראשונות בחינם, בקניית בשר טרי ב-₪600. `:'סט המנות הראשונות נוסף להזמנה במתנה. '):'')+'המחיר הוא לקילוגרם. המשקל הסופי עשוי להשתנות מעט.';
  $('#send').disabled=!n; $('#send').style.opacity=n?1:.4; $('#sent').hidden=true;
 }
 renderCart();
+$('#resChk').addEventListener('change',renderCart);
 let toastT;
 function add(id,btn){
  const q=pick[id]||1; cart.set(id,(cart.get(id)||0)+q); renderCart();
