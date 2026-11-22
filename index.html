@@ -701,7 +701,7 @@ function renderCart(){
   :'<li style="display:block;border:0"><div class="emptycart"><b>השובר ריק</b>בחרו נתח והוסיפו אותו להזמנה.</div></li>';
  const gift=meat>=600;
  $('#lines').innerHTML=rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
- if(gift&&!renderCart.had&&!renderCart.shown){renderCart.shown=true; setTimeout(showGift,350)}
+ if(gift&&!renderCart.had) setTimeout(showGift,350);
  renderCart.had=gift;
  $('#total').textContent=nis(sum);
  $('#note').textContent=(n?(meat<600?`עוד ${nis(600-meat)} לסט מנות ראשונות בחינם, בקניית בשר טרי ב-₪600. `:'סט המנות הראשונות נוסף להזמנה במתנה. '):'')+'המחיר הוא לקילוגרם. המשקל הסופי עשוי להשתנות מעט.';
