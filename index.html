@@ -805,7 +805,7 @@ function renderCart(){
    <div class="sum num">${p.price!=null?nis(p.price*q):'—'}<button class="rm" data-rm="${id}">הסרה</button></div></li>`}).join('')
   :'<li style="display:block;border:0"><div class="emptycart"><b>השובר ריק</b>בחרו נתח והוסיפו אותו להזמנה.</div></li>';
  const gift=meat>=600;
- $('#lines').innerHTML=quickHTML()+rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
+ $('#lines').innerHTML=rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
  if(gift&&!renderCart.had) setTimeout(showGift,350);
  renderCart.had=gift;
  const res=$('#resChk').checked, off=res?Math.round(disc*.2):0; renderCart.last={sum,off,gift,res};
