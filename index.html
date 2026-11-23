@@ -336,6 +336,10 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .wlist li img,.wlist li i{flex:none;width:40px;height:40px;object-fit:cover;border-radius:3px;background:#181716}
 .wlist li b{flex:1;font-weight:500;color:#f3efe8}
 .wlist li span{color:#cfc8be;white-space:nowrap}
+.wpop.ready .wlist li span+span{min-width:76px;text-align:left}
+.wlist li.sum b,.wlist li.sum span{font-size:18px;font-weight:900;color:#f3efe8}
+.wlist li.sum{border-bottom:0}
+.wnote{margin-top:0;padding:10px 12px;border-right:2px solid #c4162a;background:#181716;border-radius:3px;text-align:right}
 .fld{display:grid;gap:6px;font-size:14px;font-weight:700}
 .fld i{font-style:normal;font-weight:400;color:var(--muted)}
 .fld input,.fld textarea{font:inherit;font-weight:400;font-size:16px;color:#f3efe8;background:rgba(243,239,232,.05);border:1px solid var(--line);border-radius:3px;padding:12px 14px;width:100%}
@@ -611,6 +615,7 @@ html.cine .rail,html.cine .arrows{display:none}
     <h2 id="wpopTitle">טוב לראות אותך שוב</h2>
     <p id="wpopLast"></p>
     <ul class="wlist" id="wpopList"></ul>
+    <p class="wnote" id="wpopNote" hidden></p>
     <button class="btn" id="wpopAgain">להזמין שוב את ההזמנה הזו</button>
     <button class="addon-skip" id="wpopSkip">לא עכשיו, אבחר בעצמי</button>
   </div>
@@ -857,11 +862,11 @@ async function submitOrder(e){
  const order={name,phone,email,notes:f.elements.notes.value.trim(),privacy:true,marketing:f.elements.marketing.checked,resident:L.res,gift:L.gift,items,estimate:L.sum,discount:L.off,total:L.sum-L.off};
  const btn=$('#coSend'); btn.disabled=true; btn.textContent='שולח…';
  try{
-  let id;
-  if(API){const r=await fetch(API,{method:'POST',body:JSON.stringify(order)}); const j=await r.json(); if(!j.ok) throw new Error(j.error||'failed'); id=j.id}
+  let id, tk;
+  if(API){const r=await fetch(API,{method:'POST',body:JSON.stringify(order)}); const j=await r.json(); if(!j.ok) throw new Error(j.error||'failed'); id=j.id; tk=j.t}
   else id='D'+String(Date.now()).slice(-4);
   LS.set('casa_me',{name,phone,email,marketing:order.marketing,privacy:true});
-  LS.set('casa_orders',[{id,at:Date.now(),items:[...cart]},...history_()].slice(0,20));
+  LS.set('casa_orders',[{id,t:tk,at:Date.now(),items:[...cart]},...history_()].slice(0,20));
   cart.clear(); renderCart(); f.elements.notes.value='';
   $('#co').hidden=true;
   $('#coDone').innerHTML=`<div class="okm">✓</div><h3>ההזמנה התקבלה!</h3><p>מספר הזמנה <b class="num">#${id}</b></p>
@@ -875,11 +880,39 @@ async function submitOrder(e){
 $('#co').addEventListener('submit',submitOrder);
 renderCart();
 // Welcome back: greet a returning customer by name and offer their last order (once per visit)
-function showWelcome(){
+// Status of the customer's last order from the order server: null when unknown (offline, old order, prototype mode)
+async function lastStatus(o){
+ if(!API||!o||!o.t) return null;
+ try{const r=await fetch(API.replace(/\/api\/order$/,'/api/status/'+o.id)+'?t='+encodeURIComponent(o.t)); const j=await r.json(); return j.ok?j:null}catch(e){return null}
+}
+function wpopMode(ready){$('#wpop').classList.toggle('ready',ready); $('#wpopAgain').textContent=ready?'מעולה, תודה!':'להזמין שוב את ההזמנה הזו'; $('#wpopSkip').hidden=ready}
+function showReady(me,s){
+ const f=s.final;
+ $('#wpopHi').textContent='שלום, '+me.name.split(' ')[0];
+ $('#wpopImg').hidden=true;
+ $('#wpopTitle').textContent='ההזמנה שלך מוכנה!';
+ $('#wpopLast').innerHTML=`הזמנה <span class="num">#${s.id}</span> · אפשר לבוא לאסוף`;
+ $('#wpopList').innerHTML=f.items.map(i=>`<li><b>${esc(i.name)}</b><span class="num">${esc(i.label)}</span><span class="num">${i.price!=null?nis(i.price):''}</span></li>`).join('')
+  +(s.gift?'<li><b>סט מנות ראשונות</b><span>מתנה</span></li>':'')
+  +(f.discount?`<li><b>הנחת תושב/ת אילת</b><span class="num" dir="ltr">−${nis(f.discount)}</span></li>`:'')
+  +`<li class="sum"><b>סכום סופי לפי שקילה</b><span class="num">${nis(f.total)}</span></li>`;
+ $('#wpopNote').hidden=!f.note; $('#wpopNote').textContent=f.note;
+ wpopMode(true); $('#wpop').hidden=false; $('#wpop').focus();
+}
+let statusT;
+async function showWelcome(){
  const me=LS.get('casa_me',{}), o=history_()[0];
- if(!me.name||!o||cart.size||anyOpen()) return;
+ if(!me.name||!o) return;
+ const s=await lastStatus(o);
+ if(s&&s.status==='ready'&&s.final){ // ready beats everything: show it every visit until picked up
+  if(anyOpen()) return; try{if(sessionStorage.getItem('casa_ready')==o.id) return; sessionStorage.setItem('casa_ready',o.id)}catch(e){}
+  return showReady(me,s);
+ }
+ if(s&&s.status==='new'){clearTimeout(statusT); statusT=setTimeout(showWelcome,60000); return} // still being weighed: no reorder offer, check again in a minute
+ if(cart.size||anyOpen()) return;
  try{if(sessionStorage.getItem('casa_hi')) return; sessionStorage.setItem('casa_hi','1')}catch(e){}
  const items=o.items.filter(([id])=>BY[id]); if(!items.length) return;
+ $('#wpopTitle').textContent='טוב לראות אותך שוב'; $('#wpopNote').hidden=true; wpopMode(false);
  const d=new Date(o.at), first=items.map(([id])=>BY[id]).find(p=>p.img);
  $('#wpopHi').textContent='שלום, '+me.name.split(' ')[0];
  $('#wpopImg').hidden=!first; if(first) $('#wpopImg').src=IMG[first.img];
@@ -911,6 +944,7 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('button,a'); if(!t) return;
  if(t.dataset.add){const z=!$('#zoom').hidden; add(t.dataset.add,t); if(z) setTimeout(()=>{closeZoom(); if(showGift.wait) showGift()},z&&t.dataset.add==='burger'?0:650); if(t.dataset.add==='burger') setTimeout(openAddon,z?10:0); return}
  if(t.id==='zoomClose') return closeZoom();
+ if(t.id==='wpopAgain'&&$('#wpop').classList.contains('ready')) return closeWelcome();
  if(t.id==='wpopAgain'){const o=history_()[0]; closeWelcome(); if(o) o.items.forEach(([id,q])=>{if(BY[id]) cart.set(id,q)}); renderCart(); return openDrawer()}
  if(t.id==='wpopSkip') return closeWelcome();
  if(t.id==='coEdit'){$('#co').classList.remove('known'); return $('#co').elements.name.focus()}
