@@ -317,6 +317,46 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .resident{margin:26px auto 0;font-size:17px;color:#f3efe8}.resident b{color:#c4162a;font-weight:900;font-size:1.25em}
 .note{font-size:12.5px;color:var(--muted);margin:8px 0 16px}
 .drawer footer .btn{width:100%}
+.drawer.ck #lines,.drawer.ck footer{display:none}
+.co{flex:1;overflow-y:auto;padding:18px 26px 26px;display:grid;align-content:start;gap:14px}
+.co-back{justify-self:start;font-size:14px;color:var(--muted);text-decoration:underline}
+.co h3{font-size:26px;font-weight:900;line-height:1.1}
+.co-sub{font-size:14px;color:var(--muted);margin-top:-6px}
+.fld{display:grid;gap:6px;font-size:14px;font-weight:700}
+.fld i{font-style:normal;font-weight:400;color:var(--muted)}
+.fld input,.fld textarea{font:inherit;font-weight:400;font-size:16px;color:#f3efe8;background:rgba(243,239,232,.05);border:1px solid var(--line);border-radius:3px;padding:12px 14px;width:100%}
+.fld input{height:48px}.fld textarea{resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:2px solid #c4162a;outline-offset:1px;border-color:transparent}
+.fld input[dir=ltr]{text-align:right}
+.fld.bad input{border-color:#e2394b}
+.chk{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.45;cursor:pointer}
+.chk input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:#c4162a;cursor:pointer}
+.chk.bad span{color:#ff8a96}
+.lnk{text-decoration:underline;font-weight:700}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.co-err{font-size:14px;color:#ff8a96;min-height:0}.co-err:empty{display:none}
+.co-sum{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:14px;font-size:15px}
+.co-sum b{font-size:26px;font-weight:900}
+.co .btn{width:100%}.co .btn[disabled]{opacity:.6;cursor:wait}
+.co.done{text-align:center;align-content:center;justify-items:center;gap:12px}
+.co.done .okm{width:64px;height:64px;border-radius:50%;border:2px solid #c4162a;display:grid;place-items:center;font-size:30px;color:#c4162a}
+.co.done p{font-size:15px;color:var(--muted);max-width:340px}
+.co.done p b{color:var(--ink)}
+.co.done .btn{width:auto;min-width:200px;margin-top:8px}
+.lines li.quick{display:block;padding:18px 0 16px}
+.quick .qh{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.quick .qh b{font-size:19px;font-weight:900}
+.quick .qh small{font-size:13px;color:var(--muted)}
+.qagain{display:block;width:100%;margin:12px 0 10px;height:44px;border:1px solid #c4162a;border-radius:3px;font-size:15px;font-weight:700;color:#f3efe8;transition:background .2s}
+.qagain:hover{background:rgba(196,22,42,.18)}
+.qitems{display:grid;gap:8px}
+.qi{display:grid;grid-template-columns:1fr auto 32px;align-items:center;gap:10px;padding:8px 10px 8px 6px;border:1px solid var(--line);border-radius:3px;text-align:right}
+.qi span{font-weight:700;font-size:15px}.qi small{font-size:13px;color:var(--muted)}
+.qi i{font-style:normal;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:#c4162a;color:#fff;font-size:20px;line-height:1}
+.priv .addon-box{max-height:88svh;overflow:auto}
+.priv h3{font-size:16px;font-weight:700;margin-top:4px}
+.priv p,.priv li{font-size:14px;color:#cfc8be;line-height:1.55}
+.priv ul{margin:0;padding-inline-start:20px}
 .sent{font-size:14px;margin-top:12px;padding:10px 12px;background:var(--bone-2);border-right:0}
 
 /* ---------- spec sheet ---------- */
@@ -554,15 +594,45 @@ html.cine .rail,html.cine .arrows{display:none}
   <header><div><small>CASA DO BRASIL</small><h2 id="drawerTitle">שובר הזמנה</h2></div><button class="x" id="closeDrawer" aria-label="סגירה">×</button></header>
   <ul class="lines" id="lines"></ul>
   <footer>
-    <label class="res"><input type="checkbox" id="resChk"><span><b>תושב/ת אילת?</b> <span class="num">20%</span> הנחה בהצגת תעודת תושב</span></label>
+    <label class="res"><input type="checkbox" id="resChk"><span><b>תושב/ת אילת?</b> <span class="num">20%</span> הנחה בהצגת תעודת תושב <small style="opacity:.7">(למעט פריטים עם *)</small></span></label>
     <div class="tot disc" id="discRow" hidden><span>הנחת תושב <span class="num">20%</span></span><b class="num" id="disc" dir="ltr">₪0</b></div>
     <div class="tot"><span>סיכום משוער</span><b class="num" id="total">₪0</b></div>
     <p class="note" id="note"></p>
-    <button class="btn" id="send">שליחת בקשת הזמנה</button>
-    <p class="sent" id="sent" hidden>זהו אבטיפוס עיצובי, ולכן הבקשה לא נשלחה. באתר החי היא תגיע לקצבייה לאישור.</p>
+    <button class="btn" id="send">להמשך ההזמנה</button>
   </footer>
+  <form class="co" id="co" novalidate hidden>
+    <button type="button" class="co-back" id="coBack">חזרה לשובר</button>
+    <h3>פרטים להזמנה</h3>
+    <p class="co-sub">נשלח לך אישור בוואטסאפ. המחיר הסופי ייקבע אחרי שקילה.</p>
+    <label class="fld"><span>שם מלא</span><input name="name" autocomplete="name" maxlength="60" required></label>
+    <label class="fld"><span>טלפון נייד</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" maxlength="16" placeholder="050-0000000" required></label>
+    <label class="fld"><span>אימייל</span><input name="email" type="email" inputmode="email" autocomplete="email" dir="ltr" maxlength="80" required></label>
+    <label class="fld"><span>הערות להזמנה <i>(לא חובה)</i></span><textarea name="notes" rows="2" maxlength="300"></textarea></label>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <label class="chk"><input type="checkbox" name="privacy" required><span>קראתי ואני מאשר/ת את <button type="button" class="lnk" id="privOpen">מדיניות הפרטיות</button>, כולל שמירת הפרטים וההזמנות שלי לטיפול בהזמנה ולהזמנה מהירה בעתיד.</span></label>
+    <label class="chk"><input type="checkbox" name="marketing"><span>אשמח לקבל מבצעים ועדכונים בוואטסאפ ובמייל. אפשר להסיר בכל עת. <i style="font-style:normal;opacity:.7">(לא חובה)</i></span></label>
+    <p class="co-err" id="coErr" role="alert"></p>
+    <div class="co-sum"><span>סיכום משוער</span><b class="num" id="coTotal">₪0</b></div>
+    <button class="btn" type="submit" id="coSend">שליחת ההזמנה</button>
+  </form>
+  <div class="co done" id="coDone" hidden></div>
 </aside>
 
+<div class="addon priv" id="priv" role="dialog" aria-modal="true" aria-labelledby="privTitle" tabindex="-1" hidden>
+  <div class="addon-box">
+    <h2 id="privTitle">מדיניות פרטיות</h2>
+    <p>Casa Do Brasil, דרך הערבה 23, אילת, מכבדת את פרטיותך. כאן מוסבר אילו פרטים נאספים בהזמנה ומה עושים איתם.</p>
+    <h3>מה נאסף</h3>
+    <ul><li>שם מלא, טלפון נייד ואימייל.</li><li>פרטי ההזמנה: המוצרים, הכמויות, המשקל, הסכום וההערות שכתבת.</li></ul>
+    <h3>למה</h3>
+    <ul><li>כדי לטפל בהזמנה, לשקול אותה ולעדכן אותך כשהיא מוכנה ומה הסכום הסופי.</li><li>כדי לזכור מה הזמנת, וכך להציג לך הזמנה מהירה בפעם הבאה.</li><li>הודעות שיווק נשלחות רק אם סימנת שאת/ה מעוניין/ת בהן.</li></ul>
+    <h3>איפה זה נשמר ומי רואה</h3>
+    <p>הפרטים נשמרים בחשבון Google של העסק, וצוות הקצבייה בלבד רואה אותם. ההודעות נשלחות בוואטסאפ דרך ספק שליחה, ובמייל. רשימת ההזמנות שלך נשמרת גם בדפדפן שלך, בשביל ההזמנה המהירה. הפרטים לא נמכרים ולא מועברים לגורם אחר לצורכי שיווק.</p>
+    <h3>הזכויות שלך</h3>
+    <p>אפשר לבקש לעיין בפרטים, לתקן אותם או למחוק אותם, בטלפון <span class="num" dir="ltr">08-6323032</span>. כדי להפסיק לקבל הודעות שיווק, משיבים "הסר" להודעה או מבקשים בטלפון.</p>
+    <button class="btn" id="privOk">הבנתי</button>
+  </div>
+</div>
 <button class="specbtn" id="specBtn" hidden>מפרט עיצוב ותנועה</button>
 <div class="spec" id="spec" hidden>
  <div class="spec-in">
@@ -659,11 +729,13 @@ const CAT_IC={
  chicken:IC('<path d="M9 20v-3.200M12.500 20v-3.200M7.500 20h3M11.500 20h3"/><path d="M4 9.500c-.5 4 2 7.300 6.500 7.300 4.200 0 6.500-2.700 6.500-6.300V8"/><path d="M17 8a1.800 1.800 0 1 1 3.600 0l1.400.9-1.700.8c0 1.300-1 2.300-2.300 2.300"/><path d="M4 9.500L2.500 7 6 8.500M18 6.200l.3-1.700M19.500 6.300l1-1.300"/>'),
  more:IC('<path d="M4.500 3.500l9 9-2.600 2.600L3 7.500z"/><path d="M12.300 13.800L18 20"/><path d="M19.500 3.500l-9 9 2.600 2.600L21 7.500z"/><path d="M11.700 13.800L6 20"/>')
 };
+CUTS.forEach(c=>c.steak=true); // steaks are sold in 200 g pieces
 const CATS=[['all','הכול'],['beef','בקר'],['lamb','טלה'],['chicken','עוף'],['more','עוד מהקצבייה']];
-const $=s=>document.querySelector(s), kg=q=>q.toFixed(1)+' ק״ג', fmt=(p,q)=>p.unit?q+' יח׳':kg(q), per=p=>p.unit?'ליחידה':'לק״ג', star=p=>p.star?'<small class="star">* ללא הנחה</small>':'', nis=n=>'‎₪'+(Number.isInteger(n)?n:n.toFixed(2));
+const $=s=>document.querySelector(s), kg=q=>q.toFixed(1)+' ק״ג', stp=p=>p.unit?1:p.steak?.2:.5, def=p=>p.unit?1:p.steak?.2:1, nst=q=>Math.round(q/.2), gr=q=>Math.round(q*1000), r1=q=>Math.round(q*10)/10,
+ fmt=(p,q)=>p.unit?q+' יח׳':p.steak?(nst(q)===1?'סטייק אחד':nst(q)+' סטייקים'):kg(q), fmtL=(p,q)=>p.steak?fmt(p,q)+' · '+gr(q)+' גרם':fmt(p,q), per=p=>p.unit?'ליחידה':'לק״ג', star=p=>p.star?'<small class="star">* ללא הנחה</small>':'', nis=n=>'‎₪'+(Number.isInteger(n)?n:n.toFixed(2));
 const priceHTML=p=>p.price!=null?`<div class="price num"><b>${p.price}</b>₪ ${per(p)}${star(p)}</div>`:`<div class="price tbd"><b>מחיר לפי קטלוג</b></div>`;
 const CART_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h3l2.6 12h11L21 7H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></svg>';
-const buyHTML=p=>`<div class="buy"><div class="step" data-step="${p.id}"><button aria-label="פחות">−</button><span class="num" data-q>${fmt(p,1)}</span><button aria-label="יותר">+</button></div><button class="btn" data-add="${p.id}">${CART_SVG}<span>הוספה להזמנה</span></button></div>`;
+const buyHTML=p=>`<div class="buy"><div class="step" data-step="${p.id}"><button aria-label="פחות">−</button><span class="num" data-q>${fmt(p,def(p))}</span><button aria-label="יותר">+</button></div><button class="btn" data-add="${p.id}">${CART_SVG}<span>הוספה להזמנה</span></button></div>`;
 const tagHTML=p=>p.standin?'<span class="tag">צילום זמני</span>':'';
 
 // ----- showcase markup -----
@@ -699,41 +771,96 @@ function count(){return cart.size}
 function renderCart(){
  const n=count(), b=$('#badge'); b.hidden=!n; b.textContent=n;
  $('#barCount').textContent=n?n+' פריטים':'ריק';
- let sum=0, tbd=0, meat=0;
- const rows=n?[...cart].map(([id,q])=>{const p=BY[id]; if(p.price!=null){sum+=p.price*q; if(p.cat!=='extra') meat+=p.price*q} else tbd++;
+ let sum=0, tbd=0, meat=0, disc=0;
+ const rows=n?[...cart].map(([id,q])=>{const p=BY[id]; if(p.price!=null){sum+=p.price*q; if(!p.star) disc+=p.price*q; if(p.cat!=='extra') meat+=p.price*q} else tbd++;
   return `<li><div class="thumb ${p.img?tn(p):''}">${p.img?`<img src="${IMG[p.img]}" alt="">`:(p.cat==='extra'?'':'אין צילום')}</div>
-   <div><h3>${p.name}</h3><div class="unit num">${p.price!=null?nis(p.price)+' '+per(p):'מחיר לפי קטלוג'}</div>
+   <div><h3>${p.name}</h3><div class="unit num">${p.price!=null?nis(p.price)+' '+per(p):'מחיר לפי קטלוג'}${p.steak?' · '+gr(q)+' גרם':''}</div>
    <div class="step" data-line="${id}"><button aria-label="פחות">−</button><span class="num">${fmt(p,q)}</span><button aria-label="יותר">+</button></div></div>
    <div class="sum num">${p.price!=null?nis(p.price*q):'—'}<button class="rm" data-rm="${id}">הסרה</button></div></li>`}).join('')
   :'<li style="display:block;border:0"><div class="emptycart"><b>השובר ריק</b>בחרו נתח והוסיפו אותו להזמנה.</div></li>';
  const gift=meat>=600;
- $('#lines').innerHTML=rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
+ $('#lines').innerHTML=quickHTML()+rows+(gift?`<li class="gift${renderCart.had?'':' pop'}"><img src="${IMG.starters}" alt="סט מנות ראשונות"><div><small>מגיע לכם!</small><h3>סט מנות ראשונות במתנה, עלינו</h3><p>הזמנתם בשר טרי מעל ₪600, אז הפתיחה עלינו. בתיאבון!</p></div><div class="sum num"><s>${nis(79)}</s><b>מתנה</b></div></li>`:'');
  if(gift&&!renderCart.had) setTimeout(showGift,350);
  renderCart.had=gift;
- const res=$('#resChk').checked, off=res?Math.round(sum*.2):0;
+ const res=$('#resChk').checked, off=res?Math.round(disc*.2):0; renderCart.last={sum,off,gift,res};
  $('#discRow').hidden=!(res&&sum); $('#disc').textContent='−'+nis(off);
  $('#total').textContent=nis(sum-off);
  $('#note').textContent=(n?(meat<600?`עוד ${nis(600-meat)} לסט מנות ראשונות בחינם, בקניית בשר טרי ב-₪600. `:'סט המנות הראשונות נוסף להזמנה במתנה. '):'')+'המחיר הוא לקילוגרם. המשקל הסופי עשוי להשתנות מעט.';
- $('#send').disabled=!n; $('#send').style.opacity=n?1:.4; $('#sent').hidden=true;
+ $('#send').disabled=!n; $('#send').style.opacity=n?1:.4;
 }
+// ----- customer memory (this device) + order sending -----
+const API=''; // Google Apps Script web-app URL. Empty = prototype mode, nothing leaves the device. See server/SETUP.md
+const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function history_(){return LS.get('casa_orders',[]).filter(o=>o&&Array.isArray(o.items))}
+function quickHTML(){
+ const H=history_(); if(!H.length) return '';
+ const last=H[0], seen=new Map();
+ H.forEach(o=>o.items.forEach(([id,q])=>{if(!BY[id]) return; const s=seen.get(id); if(s) s.n++; else seen.set(id,{q,n:1})}));
+ const items=[...seen].sort((a,b)=>b[1].n-a[1].n).slice(0,8);
+ const d=new Date(last.at), ds=d.getDate()+'.'+(d.getMonth()+1);
+ return `<li class="quick"><div class="qh"><b>הזמנה מהירה</b><small>לפי ההזמנות הקודמות שלך</small></div>
+  <button class="qagain" data-again>להזמין שוב את ההזמנה מ־${ds}</button>
+  <div class="qitems">${items.map(([id,s])=>`<button class="qi" data-qadd="${id}" data-qq="${s.q}" aria-label="הוספת ${BY[id].name}"><span>${BY[id].name}</span><small class="num">${fmtL(BY[id],s.q)}</small><i>+</i></button>`).join('')}</div></li>`;
+}
+function openCheckout(){
+ if(!cart.size) return;
+ const me=LS.get('casa_me',{}), f=$('#co');
+ ['name','phone','email'].forEach(k=>{if(me[k]&&!f.elements[k].value) f.elements[k].value=me[k]});
+ if(me.marketing) f.elements.marketing.checked=true;
+ $('#coTotal').textContent=$('#total').textContent; $('#coErr').textContent='';
+ $('#drawer').classList.add('ck'); f.hidden=false; $('#coDone').hidden=true; f.scrollTop=0;
+}
+function closeCheckout(){$('#drawer').classList.remove('ck'); $('#co').hidden=true; $('#coDone').hidden=true}
+const normPhone=s=>{let d=String(s).replace(/\D/g,''); if(d.startsWith('972')) d='0'+d.slice(3); return d};
+async function submitOrder(e){
+ e.preventDefault(); const f=$('#co'), err=$('#coErr'); err.textContent='';
+ f.querySelectorAll('.bad').forEach(x=>x.classList.remove('bad'));
+ const name=f.elements.name.value.trim().replace(/\s+/g,' '), phone=normPhone(f.elements.phone.value), email=f.elements.email.value.trim();
+ const bad=[];
+ if(name.length<2) bad.push([f.elements.name,'שם מלא']);
+ if(!/^05\d{8}$/.test(phone)) bad.push([f.elements.phone,'טלפון נייד תקין']);
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) bad.push([f.elements.email,'אימייל תקין']);
+ if(!f.elements.privacy.checked) bad.push([f.elements.privacy,'אישור מדיניות הפרטיות']);
+ if(bad.length){bad.forEach(([el])=>el.closest('label').classList.add('bad')); err.textContent='חסר: '+bad.map(b=>b[1]).join(', ')+'.'; bad[0][0].focus(); return}
+ if(f.elements.website.value) return;
+ const L=renderCart.last, items=[...cart].map(([id,q])=>{const p=BY[id]; return {id,name:p.name,q,label:fmtL(p,q),unit:p.unit?'unit':'kg',steak:!!p.steak,price:p.price,star:!!p.star}});
+ const order={name,phone,email,notes:f.elements.notes.value.trim(),privacy:true,marketing:f.elements.marketing.checked,resident:L.res,gift:L.gift,items,estimate:L.sum,discount:L.off,total:L.sum-L.off};
+ const btn=$('#coSend'); btn.disabled=true; btn.textContent='שולח…';
+ try{
+  let id;
+  if(API){const r=await fetch(API,{method:'POST',body:JSON.stringify(order)}); const j=await r.json(); if(!j.ok) throw new Error(j.error||'failed'); id=j.id}
+  else id='D'+String(Date.now()).slice(-4);
+  LS.set('casa_me',{name,phone,email,marketing:order.marketing});
+  LS.set('casa_orders',[{id,at:Date.now(),items:[...cart]},...history_()].slice(0,20));
+  cart.clear(); renderCart(); f.elements.notes.value='';
+  $('#co').hidden=true;
+  $('#coDone').innerHTML=`<div class="okm">✓</div><h3>ההזמנה התקבלה!</h3><p>מספר הזמנה <b class="num">#${id}</b></p>
+   <p>${API?'שלחנו לך הודעה בוואטסאפ. ':''}המחיר הסופי עשוי להשתנות מעט בהתאם למשקל בפועל. אחרי השקילה נשלח לך הודעה שההזמנה מוכנה, עם הסכום הסופי.</p>
+   ${API?'':'<p><b>מצב אבטיפוס:</b> ההזמנה נשמרה רק במכשיר הזה ולא נשלחה לקצבייה.</p>'}
+   <button class="btn" id="coClose">סגירה</button>`;
+  $('#coDone').hidden=false; $('#coClose').focus();
+ }catch(x){err.textContent=/[֐-׿]/.test(x.message)?x.message:'לא הצלחנו לשלוח את ההזמנה. נסו שוב, או התקשרו 08-6323032.'}
+ finally{btn.disabled=false; btn.textContent='שליחת ההזמנה'}
+}
+$('#co').addEventListener('submit',submitOrder);
 renderCart();
 $('#resChk').addEventListener('change',renderCart);
 let toastT;
 function add(id,btn){
- const q=pick[id]||1; cart.set(id,(cart.get(id)||0)+q); renderCart();
+ const q=pick[id]||def(BY[id]); cart.set(id,r1((cart.get(id)||0)+q)); renderCart();
  const b=$('#badge'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
  if(btn){const s=btn.querySelector('span'), old=s.textContent; btn.classList.add('done'); s.textContent='נוסף לשובר'; setTimeout(()=>{btn.classList.remove('done'); s.textContent=old},1200)}
- $('#toastMsg').textContent=`${BY[id].name} · ${fmt(BY[id],q)} נוסף לשובר`; $('#toast').classList.add('in'); clearTimeout(toastT); toastT=setTimeout(()=>$('#toast').classList.remove('in'),3200);
+ $('#toastMsg').textContent=`${BY[id].name} · ${fmtL(BY[id],q)} נוסף לשובר`; $('#toast').classList.add('in'); clearTimeout(toastT); toastT=setTimeout(()=>$('#toast').classList.remove('in'),3200);
 }
 let lastFocus;
-function openZoom(id){const p=BY[id]; if(!p||!p.img) return; lastFocus=document.activeElement; pick[id]=pick[id]||1;
+function openZoom(id){const p=BY[id]; if(!p||!p.img) return; lastFocus=document.activeElement; pick[id]=pick[id]||def(p);
  $('#zoomBox').innerHTML=`<button class="x" id="zoomClose" aria-label="סגירה">×</button><img class="zbig ${tn(p)}" src="${IMG[p.img]}" alt="${p.name}">${tagHTML(p)}<h2 id="zoomTitle">${p.name}</h2>${priceHTML(p)}${p.desc?`<p>${p.desc}</p>`:''}${buyHTML(p)}`;
  $('#zoomBox [data-q]').textContent=fmt(p,pick[id]); $('#toast').classList.remove('in'); $('#zoom').hidden=false; $('#zoom').focus()}
 function closeZoom(){$('#zoom').hidden=true; lastFocus&&lastFocus.focus&&lastFocus.focus()}
 function showGift(){ if(!$('#addon').hidden||!$('#zoom').hidden){showGift.wait=true; return} showGift.wait=false; $('#toast').classList.remove('in'); $('#gpop').hidden=false; $('#gpop').focus()}
 function closeGift(){$('#gpop').hidden=true}
 function openDrawer(){lastFocus=document.activeElement; $('#toast').classList.remove('in'); $('#drawer').classList.add('in'); $('#scrim').classList.add('in'); $('#drawer').focus()}
-function closeDrawer(){$('#drawer').classList.remove('in'); $('#scrim').classList.remove('in'); lastFocus&&lastFocus.focus&&lastFocus.focus()}
+function closeDrawer(){if(!$('#coDone').hidden) closeCheckout(); $('#drawer').classList.remove('in'); $('#scrim').classList.remove('in'); lastFocus&&lastFocus.focus&&lastFocus.focus()}
 document.addEventListener('click',e=>{
  const t=e.target.closest('button,a'); if(!t) return;
  if(t.dataset.add){const z=!$('#zoom').hidden; add(t.dataset.add,t); if(z) setTimeout(()=>{closeZoom(); if(showGift.wait) showGift()},z&&t.dataset.add==='burger'?0:650); if(t.dataset.add==='burger') setTimeout(openAddon,z?10:0); return}
@@ -751,28 +878,35 @@ document.addEventListener('click',e=>{
  if(t.dataset.go) return goTo(+t.dataset.go);
  if(t.id==='prev') return goTo(active-1);
  if(t.id==='next') return goTo(active+1);
- if(t.id==='send'){ $('#sent').hidden=false; return }
+ if(t.id==='send') return openCheckout();
+ if(t.id==='coBack') return closeCheckout();
+ if(t.id==='coClose'){closeCheckout(); return closeDrawer()}
+ if(t.id==='privOpen'){ $('#priv').hidden=false; $('#priv').focus(); return }
+ if(t.id==='privOk'){ $('#priv').hidden=true; $('#privOpen').focus(); return }
+ if(t.dataset.qadd){const id=t.dataset.qadd, q=+t.dataset.qq; cart.set(id,r1((cart.get(id)||0)+q)); return renderCart()}
+ if(t.dataset.again!==undefined){const o=history_()[0]; if(o) o.items.forEach(([id,q])=>{if(BY[id]) cart.set(id,q)}); return renderCart()}
  if(t.id==='specBtn'){ $('#spec').hidden=false; $('#specClose').focus(); return }
  if(t.id==='specClose'){ $('#spec').hidden=true; $('#specBtn').focus(); return }
  const st=t.closest('.step'); if(st){
-  const id0=st.dataset.line||st.dataset.step, s0=BY[id0].unit?1:.5, d=t.textContent.trim()==='+'?s0:-s0;
-  if(st.dataset.line){const id=st.dataset.line, q=Math.max(s0,cart.get(id)+d); cart.set(id,q); renderCart()}
-  else{const id=st.dataset.step; pick[id]=Math.max(s0,(pick[id]||1)+d); document.querySelectorAll(`[data-step="${id}"] [data-q]`).forEach(s=>s.textContent=fmt(BY[id],pick[id]))}
+  const id0=st.dataset.line||st.dataset.step, s0=stp(BY[id0]), d=t.textContent.trim()==='+'?s0:-s0;
+  if(st.dataset.line){const id=st.dataset.line, q=Math.max(s0,r1(cart.get(id)+d)); cart.set(id,q); renderCart()}
+  else{const id=st.dataset.step; pick[id]=Math.max(s0,r1((pick[id]||def(BY[id]))+d)); document.querySelectorAll(`[data-step="${id}"] [data-q]`).forEach(s=>s.textContent=fmt(BY[id],pick[id]))}
  }
 });
 $('#scrim').addEventListener('click',closeDrawer);
 // phone Back button: closes the open window instead of leaving the page
-const OV=['#gpop','#zoom','#addon','#spec'].map(s=>$(s)), anyOpen=()=>OV.some(e=>e&&!e.hidden)||$('#drawer').classList.contains('in');
+const OV=['#priv','#gpop','#zoom','#addon','#spec'].map(s=>$(s)), anyOpen=()=>OV.some(e=>e&&!e.hidden)||$('#drawer').classList.contains('in');
 let ovT, ignorePop=false;
 function ovSync(){clearTimeout(ovT); ovT=setTimeout(()=>{const o=anyOpen(), s=history.state&&history.state.ov; if(o&&!s) history.pushState({ov:1},''); else if(!o&&s){ignorePop=true; history.back()}},60)}
 const ovMO=new MutationObserver(ovSync); OV.forEach(e=>e&&ovMO.observe(e,{attributes:true,attributeFilter:['hidden']})); ovMO.observe($('#drawer'),{attributes:true,attributeFilter:['class']});
 addEventListener('popstate',()=>{ if(ignorePop){ignorePop=false; return}
- if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else if($('#drawer').classList.contains('in')) closeDrawer() });
+ if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else if($('#drawer').classList.contains('in')) closeDrawer() });
 $('#addon').addEventListener('click',e=>{if(e.target.id==='addon') closeAddon(false)});
 $('#zoom').addEventListener('click',e=>{if(e.target.id==='zoom') closeZoom()});
 $('#gpop').addEventListener('click',e=>{if(e.target.id==='gpop') closeGift()});
+$('#priv').addEventListener('click',e=>{if(e.target.id==='priv') $('#priv').hidden=true});
 $('#grid').addEventListener('click',e=>{const pl=e.target.closest('.plate:not(.empty)'); if(!pl) return; const a=pl.closest('.prod'), b=a&&a.querySelector('[data-add]'); if(b) openZoom(b.dataset.add)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
 
 // ----- scroll choreography -----
 const root=document.documentElement, mqW=matchMedia('(min-width:900px)'), mqM=matchMedia('(prefers-reduced-motion:reduce)');
