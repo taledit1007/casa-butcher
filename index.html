@@ -366,6 +366,7 @@ body.trk .foot{padding-bottom:calc(172px + env(safe-area-inset-bottom,0px))}
 .hist .addon-box{max-height:calc(100dvh - 32px);overflow-y:auto;padding-top:22px;text-align:right;position:relative}
 .hist .addon-box>small,.hist h2{text-align:center;display:block}
 .hist .x{position:absolute;top:10px;left:12px;width:40px;height:40px;font-size:26px;color:#a39c93}
+.hform{display:grid;gap:14px;margin-top:6px}.hform .co-err{color:#ff8a96;min-height:0}.hform p{margin:0}.hform .btn{width:100%}
 .ho{padding:16px 0;border-top:1px solid rgba(243,239,232,.14)}
 .ho-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .ho-h b{font-size:16px;color:#f3efe8}.ho-h .num{font-size:17px;font-weight:700;color:#f3efe8;white-space:nowrap}
@@ -668,6 +669,13 @@ html.cine .rail,html.cine .arrows{display:none}
     <button class="x" id="histClose" aria-label="סגירה">×</button>
     <small id="histHi"></small>
     <h2 id="histTitle">ההזמנות שלי</h2>
+    <form class="hform" id="histForm" novalidate hidden>
+      <p>כבר הזמנת אצלנו? הזינו את הטלפון והמייל שהזמנתם איתם, ונציג את ההזמנות שלכם.</p>
+      <label class="fld"><span>טלפון נייד</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" maxlength="16" placeholder="050-0000000"></label>
+      <label class="fld"><span>אימייל</span><input name="email" type="email" inputmode="email" autocomplete="email" dir="ltr" maxlength="80"></label>
+      <p class="co-err" id="histErr" role="alert"></p>
+      <button class="btn" type="submit" id="histGo">הצגת ההזמנות שלי</button>
+    </form>
     <div id="histList"></div>
   </div>
 </div>
@@ -930,6 +938,16 @@ async function submitOrder(e){
  finally{btn.disabled=false; btn.textContent='שליחת ההזמנה'}
 }
 $('#co').addEventListener('submit',submitOrder);
+$('#histForm').addEventListener('submit',async e=>{
+ e.preventDefault(); const f=$('#histForm'), btn=$('#histGo'), err=$('#histErr'); err.textContent='';
+ const phone=normPhone(f.elements.phone.value), email=f.elements.email.value.trim();
+ if(!/^05\d{8}$/.test(phone)||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){err.textContent='צריך טלפון נייד ואימייל תקינים.'; return}
+ btn.disabled=true; btn.textContent='מחפש…';
+ const j=await syncHistory(phone,email);
+ btn.disabled=false; btn.textContent='הצגת ההזמנות שלי';
+ if(!j.ok){err.textContent=j.error||'לא הצלחנו למצוא את ההזמנות. נסו שוב.'; return}
+ openHistory();
+});
 renderCart();
 // Welcome back: greet a returning customer by name and offer their last order (once per visit)
 // Status of the customer's last order from the order server: null when unknown (offline, old order, prototype mode)
@@ -963,7 +981,10 @@ function showReady(me,s){
 }
 let statusT;
 async function showWelcome(){
- const me=LS.get('casa_me',{}), o=history_()[0];
+ let me=LS.get('casa_me',{});
+ // once per visit, pick up orders made on other devices
+ try{if(me.phone&&me.email&&!sessionStorage.getItem('casa_sync')){sessionStorage.setItem('casa_sync','1'); await syncHistory(me.phone,me.email); me=LS.get('casa_me',{})}}catch(e){}
+ const o=history_()[0];
  if(!me.name||!o) return;
  const s=await lastStatus(o);
  renderTrack(o,s);
@@ -987,8 +1008,24 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 function closeWelcome(){$('#wpop').hidden=true}
 // "My orders": the last orders saved on this device, with live status and final price for recent ones
 const ST_HE={new:'ממתינה לשקילה',ready:'מוכנה לאיסוף',picked:'נאספה'};
+// Pull this customer's orders from the server (works on any device), merge them in and remember the customer
+async function syncHistory(phone,email){
+ if(!API) return {ok:false};
+ let j; try{const r=await fetch(API.replace(/\/api\/order$/,'/api/history'),{method:'POST',body:JSON.stringify({phone,email})}); j=await r.json()}catch(e){return {ok:false,error:'אין חיבור כרגע. נסו שוב.'}}
+ if(!j.ok) return j;
+ const old=LS.get('casa_me',{}); LS.set('casa_me',{...old,name:j.customer.name,phone:j.customer.phone,email:j.customer.email,marketing:j.customer.marketing,privacy:true});
+ const byId=new Map(history_().map(o=>[String(o.id),o]));
+ j.orders.forEach(o=>byId.set(String(o.id),{...(byId.get(String(o.id))||{}),...o}));
+ LS.set('casa_orders',[...byId.values()].sort((a,b)=>b.at-a.at).slice(0,20));
+ greet(); return j;
+}
 async function openHistory(){
- const me=LS.get('casa_me',{}), H=history_().slice(0,10);
+ const me=LS.get('casa_me',{});
+ $('#histForm').hidden=!!(me.phone&&me.email); $('#histErr').textContent='';
+ if(!$('#histForm').hidden){$('#histHi').textContent=''; $('#histList').innerHTML=''; $('#hist').hidden=false; $('#histForm').elements.phone.focus(); return}
+ $('#histList').innerHTML='<p>טוען…</p>'; $('#hist').hidden=false; $('#hist').focus();
+ await syncHistory(me.phone,me.email);
+ const H=history_().slice(0,10);
  $('#histHi').textContent=me.name?'שלום, '+me.name.split(' ')[0]:'';
  const row=(o,i,s)=>{const d=new Date(o.at), items=o.items.filter(([id])=>BY[id]);
   const tot=s&&s.final?s.final.total:(o.total!=null?o.total:null);
@@ -997,11 +1034,11 @@ async function openHistory(){
    <ul>${items.map(([id,q])=>{const p=BY[id]; return `<li>${p.img?`<img src="${IMG[p.img]}" alt="">`:'<i></i>'}<b>${p.name}</b><span class="num">${fmtL(p,q)}</span></li>`}).join('')}</ul>
    <button class="qagain" data-hagain="${i}">להזמין שוב את ההזמנה הזו</button></div>`};
  const paint=S=>{$('#histList').innerHTML=H.length?H.map((o,i)=>row(o,i,S[i])).join(''):'<p>עוד אין הזמנות במכשיר הזה.</p>'};
- paint([]); $('#hist').hidden=false; $('#hist').focus();
+ paint([]);
  paint(await Promise.all(H.map((o,i)=>i<5?lastStatus(o):null)));
 }
 function closeHistory(){$('#hist').hidden=true}
-function greet(){const me=LS.get('casa_me',{}), n=(me.name||'').split(' ')[0]; $('#hi').hidden=!n; $('#hi').textContent=n?'שלום, '+n:''}
+function greet(){const me=LS.get('casa_me',{}), n=(me.name||'').split(' ')[0]; $('#hi').hidden=false; $('#hi').textContent=n?'שלום, '+n:'ההזמנות שלי'}
 greet();
 setTimeout(showWelcome,900);
 $('#resChk').addEventListener('change',renderCart);
