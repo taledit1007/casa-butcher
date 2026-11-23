@@ -732,7 +732,7 @@ const CAT_IC={
 CUTS.forEach(c=>c.steak=true); // steaks are sold in 200 g pieces
 const CATS=[['all','הכול'],['beef','בקר'],['lamb','טלה'],['chicken','עוף'],['more','עוד מהקצבייה']];
 const $=s=>document.querySelector(s), kg=q=>q.toFixed(1)+' ק״ג', stp=p=>p.unit?1:p.steak?.2:.5, def=p=>p.unit?1:p.steak?.2:1, nst=q=>Math.round(q/.2), gr=q=>Math.round(q*1000), r1=q=>Math.round(q*10)/10,
- fmt=(p,q)=>p.unit?q+' יח׳':p.steak?(nst(q)===1?'סטייק אחד':nst(q)+' סטייקים'):kg(q), fmtL=(p,q)=>p.steak?fmt(p,q)+' · '+gr(q)+' גרם':fmt(p,q), per=p=>p.unit?'ליחידה':'לק״ג', star=p=>p.star?'<small class="star">* ללא הנחה</small>':'', nis=n=>'‎₪'+(Number.isInteger(n)?n:n.toFixed(2));
+ fmt=(p,q)=>p.unit?q+' יח׳':p.steak?gr(q)+' גרם':kg(q), fmtL=fmt, per=p=>p.unit?'ליחידה':'לק״ג', star=p=>p.star?'<small class="star">* ללא הנחה</small>':'', nis=n=>'‎₪'+(Number.isInteger(n)?n:n.toFixed(2));
 const priceHTML=p=>p.price!=null?`<div class="price num"><b>${p.price}</b>₪ ${per(p)}${star(p)}</div>`:`<div class="price tbd"><b>מחיר לפי קטלוג</b></div>`;
 const CART_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h3l2.6 12h11L21 7H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></svg>';
 const buyHTML=p=>`<div class="buy"><div class="step" data-step="${p.id}"><button aria-label="פחות">−</button><span class="num" data-q>${fmt(p,def(p))}</span><button aria-label="יותר">+</button></div><button class="btn" data-add="${p.id}">${CART_SVG}<span>הוספה להזמנה</span></button></div>`;
