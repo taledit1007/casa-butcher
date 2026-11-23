@@ -627,7 +627,7 @@ html.cine .rail,html.cine .arrows{display:none}
     <h3>למה</h3>
     <ul><li>כדי לטפל בהזמנה, לשקול אותה ולעדכן אותך כשהיא מוכנה ומה הסכום הסופי.</li><li>כדי לזכור מה הזמנת, וכך להציג לך הזמנה מהירה בפעם הבאה.</li><li>הודעות שיווק נשלחות רק אם סימנת שאת/ה מעוניין/ת בהן.</li></ul>
     <h3>איפה זה נשמר ומי רואה</h3>
-    <p>הפרטים נשמרים בחשבון Google של העסק, וצוות הקצבייה בלבד רואה אותם. ההודעות נשלחות בוואטסאפ דרך ספק שליחה, ובמייל. רשימת ההזמנות שלך נשמרת גם בדפדפן שלך, בשביל ההזמנה המהירה. הפרטים לא נמכרים ולא מועברים לגורם אחר לצורכי שיווק.</p>
+    <p>הפרטים נשמרים במערכת ההזמנות של העסק, ורק צוות הקצבייה רואה אותם, במסך מוגן בסיסמה. ההודעות נשלחות בוואטסאפ דרך ספק שליחה. רשימת ההזמנות שלך נשמרת גם בדפדפן שלך, בשביל ההזמנה המהירה. הפרטים לא נמכרים ולא מועברים לגורם אחר לצורכי שיווק.</p>
     <h3>הזכויות שלך</h3>
     <p>אפשר לבקש לעיין בפרטים, לתקן אותם או למחוק אותם, בטלפון <span class="num" dir="ltr">08-6323032</span>. כדי להפסיק לקבל הודעות שיווק, משיבים "הסר" להודעה או מבקשים בטלפון.</p>
     <button class="btn" id="privOk">הבנתי</button>
@@ -789,7 +789,7 @@ function renderCart(){
  $('#send').disabled=!n; $('#send').style.opacity=n?1:.4;
 }
 // ----- customer memory (this device) + order sending -----
-const API=''; // Google Apps Script web-app URL. Empty = prototype mode, nothing leaves the device. See server/SETUP.md
+const API=''; // Order server, e.g. https://casa-orders.<account>.workers.dev/api/order. Empty = prototype mode, nothing leaves the device. See orders/SETUP.md
 const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 function history_(){return LS.get('casa_orders',[]).filter(o=>o&&Array.isArray(o.items))}
 function quickHTML(){
