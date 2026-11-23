@@ -322,6 +322,12 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .co-back{justify-self:start;font-size:14px;color:var(--muted);text-decoration:underline}
 .co h3{font-size:26px;font-weight:900;line-height:1.1}
 .co-sub{font-size:14px;color:var(--muted);margin-top:-6px}
+.co-me{display:none;padding:14px 16px;border:1px solid var(--line);border-right:2px solid #c4162a;border-radius:3px;font-size:14px;line-height:1.6;color:var(--muted)}
+.co-me b{display:block;font-size:17px;color:var(--ink)}
+.co-me .lnk{margin-top:4px}
+.co.known .co-me{display:block}
+.co.known .fld.me,.co.known .chk{display:none}
+.wpop p b{color:#f3efe8;font-weight:500}
 .fld{display:grid;gap:6px;font-size:14px;font-weight:700}
 .fld i{font-style:normal;font-weight:400;color:var(--muted)}
 .fld input,.fld textarea{font:inherit;font-weight:400;font-size:16px;color:#f3efe8;background:rgba(243,239,232,.05);border:1px solid var(--line);border-radius:3px;padding:12px 14px;width:100%}
@@ -590,6 +596,16 @@ html.cine .rail,html.cine .arrows{display:none}
     <button class="addon-skip" id="gpopCart">לשובר ההזמנה</button>
   </div>
 </div>
+<div class="addon gpop wpop" id="wpop" role="dialog" aria-modal="true" aria-labelledby="wpopTitle" tabindex="-1" hidden>
+  <div class="addon-box">
+    <img alt="" id="wpopImg">
+    <small id="wpopHi"></small>
+    <h2 id="wpopTitle">טוב לראות אותך שוב</h2>
+    <p id="wpopLast"></p>
+    <button class="btn" id="wpopAgain">להזמין שוב את ההזמנה הזו</button>
+    <button class="addon-skip" id="wpopSkip">לא עכשיו, אבחר בעצמי</button>
+  </div>
+</div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
   <header><div><small>CASA DO BRASIL</small><h2 id="drawerTitle">שובר הזמנה</h2></div><button class="x" id="closeDrawer" aria-label="סגירה">×</button></header>
   <ul class="lines" id="lines"></ul>
@@ -603,10 +619,11 @@ html.cine .rail,html.cine .arrows{display:none}
   <form class="co" id="co" novalidate hidden>
     <button type="button" class="co-back" id="coBack">חזרה לשובר</button>
     <h3>פרטים להזמנה</h3>
-    <p class="co-sub">נשלח לך אישור בוואטסאפ. המחיר הסופי ייקבע אחרי שקילה.</p>
-    <label class="fld"><span>שם מלא</span><input name="name" autocomplete="name" maxlength="60" required></label>
-    <label class="fld"><span>טלפון נייד</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" maxlength="16" placeholder="050-0000000" required></label>
-    <label class="fld"><span>אימייל</span><input name="email" type="email" inputmode="email" autocomplete="email" dir="ltr" maxlength="80" required></label>
+    <p class="co-sub">המחיר הסופי ייקבע אחרי שקילה, ונעדכן אותך כשההזמנה מוכנה.</p>
+    <div class="co-me" id="coMe"></div>
+    <label class="fld me"><span>שם מלא</span><input name="name" autocomplete="name" maxlength="60" required></label>
+    <label class="fld me"><span>טלפון נייד</span><input name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" maxlength="16" placeholder="050-0000000" required></label>
+    <label class="fld me"><span>אימייל</span><input name="email" type="email" inputmode="email" autocomplete="email" dir="ltr" maxlength="80" required></label>
     <label class="fld"><span>הערות להזמנה <i>(לא חובה)</i></span><textarea name="notes" rows="2" maxlength="300"></textarea></label>
     <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     <label class="chk"><input type="checkbox" name="privacy" required><span>קראתי ואני מאשר/ת את <button type="button" class="lnk" id="privOpen">מדיניות הפרטיות</button>, כולל שמירת הפרטים וההזמנות שלי לטיפול בהזמנה ולהזמנה מהירה בעתיד.</span></label>
@@ -807,6 +824,10 @@ function openCheckout(){
  const me=LS.get('casa_me',{}), f=$('#co');
  ['name','phone','email'].forEach(k=>{if(me[k]&&!f.elements[k].value) f.elements[k].value=me[k]});
  if(me.marketing) f.elements.marketing.checked=true;
+ // returning customer: details and consent were given before, so just greet them
+ const known=!!(me.name&&me.phone&&me.email);
+ if(known){f.elements.privacy.checked=true; $('#coMe').innerHTML=`<b>שלום, ${esc(me.name)}</b><span dir="ltr">${esc(me.phone)}</span> · <span dir="ltr">${esc(me.email)}</span><br><button type="button" class="lnk" id="coEdit">עריכת הפרטים</button>`}
+ f.classList.toggle('known',known);
  $('#coTotal').textContent=$('#total').textContent; $('#coErr').textContent='';
  $('#drawer').classList.add('ck'); f.hidden=false; $('#coDone').hidden=true; f.scrollTop=0;
 }
@@ -821,7 +842,7 @@ async function submitOrder(e){
  if(!/^05\d{8}$/.test(phone)) bad.push([f.elements.phone,'טלפון נייד תקין']);
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) bad.push([f.elements.email,'אימייל תקין']);
  if(!f.elements.privacy.checked) bad.push([f.elements.privacy,'אישור מדיניות הפרטיות']);
- if(bad.length){bad.forEach(([el])=>el.closest('label').classList.add('bad')); err.textContent='חסר: '+bad.map(b=>b[1]).join(', ')+'.'; bad[0][0].focus(); return}
+ if(bad.length){f.classList.remove('known'); bad.forEach(([el])=>el.closest('label').classList.add('bad')); err.textContent='חסר: '+bad.map(b=>b[1]).join(', ')+'.'; bad[0][0].focus(); return}
  if(f.elements.website.value) return;
  const L=renderCart.last, items=[...cart].map(([id,q])=>{const p=BY[id]; return {id,name:p.name,q,label:fmtL(p,q),unit:p.unit?'unit':'kg',steak:!!p.steak,price:p.price,star:!!p.star}});
  const order={name,phone,email,notes:f.elements.notes.value.trim(),privacy:true,marketing:f.elements.marketing.checked,resident:L.res,gift:L.gift,items,estimate:L.sum,discount:L.off,total:L.sum-L.off};
@@ -830,7 +851,7 @@ async function submitOrder(e){
   let id;
   if(API){const r=await fetch(API,{method:'POST',body:JSON.stringify(order)}); const j=await r.json(); if(!j.ok) throw new Error(j.error||'failed'); id=j.id}
   else id='D'+String(Date.now()).slice(-4);
-  LS.set('casa_me',{name,phone,email,marketing:order.marketing});
+  LS.set('casa_me',{name,phone,email,marketing:order.marketing,privacy:true});
   LS.set('casa_orders',[{id,at:Date.now(),items:[...cart]},...history_()].slice(0,20));
   cart.clear(); renderCart(); f.elements.notes.value='';
   $('#co').hidden=true;
@@ -844,6 +865,21 @@ async function submitOrder(e){
 }
 $('#co').addEventListener('submit',submitOrder);
 renderCart();
+// Welcome back: greet a returning customer by name and offer their last order (once per visit)
+function showWelcome(){
+ const me=LS.get('casa_me',{}), o=history_()[0];
+ if(!me.name||!o||cart.size||anyOpen()) return;
+ try{if(sessionStorage.getItem('casa_hi')) return; sessionStorage.setItem('casa_hi','1')}catch(e){}
+ const items=o.items.filter(([id])=>BY[id]); if(!items.length) return;
+ const d=new Date(o.at), first=items.map(([id])=>BY[id]).find(p=>p.img);
+ $('#wpopHi').textContent='שלום, '+me.name.split(' ')[0];
+ $('#wpopImg').hidden=!first; if(first) $('#wpopImg').src=IMG[first.img];
+ $('#wpopLast').innerHTML=`ההזמנה הקודמת שלך (${d.getDate()}.${d.getMonth()+1}):<br>`+items.map(([id,q])=>`<b>${BY[id].name}</b> <span class="num">${fmtL(BY[id],q)}</span>`).join(' · ');
+ $('#wpop').hidden=false; $('#wpop').focus();
+}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function closeWelcome(){$('#wpop').hidden=true}
+setTimeout(showWelcome,900);
 $('#resChk').addEventListener('change',renderCart);
 let toastT;
 function add(id,btn){
@@ -865,6 +901,9 @@ document.addEventListener('click',e=>{
  const t=e.target.closest('button,a'); if(!t) return;
  if(t.dataset.add){const z=!$('#zoom').hidden; add(t.dataset.add,t); if(z) setTimeout(()=>{closeZoom(); if(showGift.wait) showGift()},z&&t.dataset.add==='burger'?0:650); if(t.dataset.add==='burger') setTimeout(openAddon,z?10:0); return}
  if(t.id==='zoomClose') return closeZoom();
+ if(t.id==='wpopAgain'){const o=history_()[0]; closeWelcome(); if(o) o.items.forEach(([id,q])=>{if(BY[id]) cart.set(id,q)}); renderCart(); return openDrawer()}
+ if(t.id==='wpopSkip') return closeWelcome();
+ if(t.id==='coEdit'){$('#co').classList.remove('known'); return $('#co').elements.name.focus()}
  if(t.id==='gpopOk') return closeGift();
  if(t.id==='gpopCart'){closeGift(); return openDrawer()}
  if(t.id==='heroGo'&&small){e.preventDefault(); $('#catalog').scrollIntoView({behavior:'smooth'}); return}
@@ -895,18 +934,19 @@ document.addEventListener('click',e=>{
 });
 $('#scrim').addEventListener('click',closeDrawer);
 // phone Back button: closes the open window instead of leaving the page
-const OV=['#priv','#gpop','#zoom','#addon','#spec'].map(s=>$(s)), anyOpen=()=>OV.some(e=>e&&!e.hidden)||$('#drawer').classList.contains('in');
+const OV=['#priv','#wpop','#gpop','#zoom','#addon','#spec'].map(s=>$(s)), anyOpen=()=>OV.some(e=>e&&!e.hidden)||$('#drawer').classList.contains('in');
 let ovT, ignorePop=false;
 function ovSync(){clearTimeout(ovT); ovT=setTimeout(()=>{const o=anyOpen(), s=history.state&&history.state.ov; if(o&&!s) history.pushState({ov:1},''); else if(!o&&s){ignorePop=true; history.back()}},60)}
 const ovMO=new MutationObserver(ovSync); OV.forEach(e=>e&&ovMO.observe(e,{attributes:true,attributeFilter:['hidden']})); ovMO.observe($('#drawer'),{attributes:true,attributeFilter:['class']});
 addEventListener('popstate',()=>{ if(ignorePop){ignorePop=false; return}
- if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else if($('#drawer').classList.contains('in')) closeDrawer() });
+ if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#wpop').hidden) closeWelcome(); else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else if($('#drawer').classList.contains('in')) closeDrawer() });
 $('#addon').addEventListener('click',e=>{if(e.target.id==='addon') closeAddon(false)});
 $('#zoom').addEventListener('click',e=>{if(e.target.id==='zoom') closeZoom()});
 $('#gpop').addEventListener('click',e=>{if(e.target.id==='gpop') closeGift()});
+$('#wpop').addEventListener('click',e=>{if(e.target.id==='wpop') closeWelcome()});
 $('#priv').addEventListener('click',e=>{if(e.target.id==='priv') $('#priv').hidden=true});
 $('#grid').addEventListener('click',e=>{const pl=e.target.closest('.plate:not(.empty)'); if(!pl) return; const a=pl.closest('.prod'), b=a&&a.querySelector('[data-add]'); if(b) openZoom(b.dataset.add)});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){ if(!$('#priv').hidden) $('#priv').hidden=true; else if(!$('#wpop').hidden) closeWelcome(); else if(!$('#gpop').hidden) closeGift(); else if(!$('#zoom').hidden) closeZoom(); else if(!$('#addon').hidden) closeAddon(false); else if(!$('#spec').hidden) $('#spec').hidden=true; else closeDrawer() }});
 
 // ----- scroll choreography -----
 const root=document.documentElement, mqW=matchMedia('(min-width:900px)'), mqM=matchMedia('(prefers-reduced-motion:reduce)');
