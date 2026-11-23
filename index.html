@@ -789,7 +789,7 @@ function renderCart(){
  $('#send').disabled=!n; $('#send').style.opacity=n?1:.4;
 }
 // ----- customer memory (this device) + order sending -----
-const API=''; // Order server, e.g. https://casa-orders.<account>.workers.dev/api/order. Empty = prototype mode, nothing leaves the device. See orders/SETUP.md
+const API='https://casa-orders.casa-do-brasil.workers.dev/api/order'; // Order server. Empty = prototype mode, nothing leaves the device. See orders/SETUP.md
 const LS={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 function history_(){return LS.get('casa_orders',[]).filter(o=>o&&Array.isArray(o.items))}
 function quickHTML(){
@@ -835,7 +835,7 @@ async function submitOrder(e){
   cart.clear(); renderCart(); f.elements.notes.value='';
   $('#co').hidden=true;
   $('#coDone').innerHTML=`<div class="okm">✓</div><h3>ההזמנה התקבלה!</h3><p>מספר הזמנה <b class="num">#${id}</b></p>
-   <p>${API?'שלחנו לך הודעה בוואטסאפ. ':''}המחיר הסופי עשוי להשתנות מעט בהתאם למשקל בפועל. אחרי השקילה נשלח לך הודעה שההזמנה מוכנה, עם הסכום הסופי.</p>
+   <p>המחיר הסופי עשוי להשתנות מעט בהתאם למשקל בפועל. אחרי השקילה נעדכן אותך שההזמנה מוכנה, עם הסכום הסופי.</p>
    ${API?'':'<p><b>מצב אבטיפוס:</b> ההזמנה נשמרה רק במכשיר הזה ולא נשלחה לקצבייה.</p>'}
    <button class="btn" id="coClose">סגירה</button>`;
   $('#coDone').hidden=false; $('#coClose').focus();
