@@ -327,7 +327,15 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .co-me .lnk{margin-top:4px}
 .co.known .co-me{display:block}
 .co.known .fld.me,.co.known .chk{display:none}
-.wpop p b{color:#f3efe8;font-weight:500}
+.wpop .addon-box{max-height:calc(100dvh - 32px);overflow-y:auto}
+.wpop img#wpopImg{aspect-ratio:16/7}
+@media(max-height:700px){.wpop img#wpopImg{display:none}.wpop .addon-box{padding-top:14px}}
+.wpop p{margin-bottom:4px}
+.wlist{list-style:none;padding:0;margin-top:0;text-align:right;border-top:1px solid rgba(243,239,232,.14)}
+.wlist li{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(243,239,232,.14);font-size:15px}
+.wlist li img,.wlist li i{flex:none;width:40px;height:40px;object-fit:cover;border-radius:3px;background:#181716}
+.wlist li b{flex:1;font-weight:500;color:#f3efe8}
+.wlist li span{color:#cfc8be;white-space:nowrap}
 .fld{display:grid;gap:6px;font-size:14px;font-weight:700}
 .fld i{font-style:normal;font-weight:400;color:var(--muted)}
 .fld input,.fld textarea{font:inherit;font-weight:400;font-size:16px;color:#f3efe8;background:rgba(243,239,232,.05);border:1px solid var(--line);border-radius:3px;padding:12px 14px;width:100%}
@@ -602,6 +610,7 @@ html.cine .rail,html.cine .arrows{display:none}
     <small id="wpopHi"></small>
     <h2 id="wpopTitle">טוב לראות אותך שוב</h2>
     <p id="wpopLast"></p>
+    <ul class="wlist" id="wpopList"></ul>
     <button class="btn" id="wpopAgain">להזמין שוב את ההזמנה הזו</button>
     <button class="addon-skip" id="wpopSkip">לא עכשיו, אבחר בעצמי</button>
   </div>
@@ -874,7 +883,8 @@ function showWelcome(){
  const d=new Date(o.at), first=items.map(([id])=>BY[id]).find(p=>p.img);
  $('#wpopHi').textContent='שלום, '+me.name.split(' ')[0];
  $('#wpopImg').hidden=!first; if(first) $('#wpopImg').src=IMG[first.img];
- $('#wpopLast').innerHTML=`ההזמנה הקודמת שלך (${d.getDate()}.${d.getMonth()+1}):<br>`+items.map(([id,q])=>`<b>${BY[id].name}</b> <span class="num">${fmtL(BY[id],q)}</span>`).join(' · ');
+ $('#wpopLast').innerHTML=`ההזמנה הקודמת שלך (${d.getDate()}.${d.getMonth()+1}):`;
+ $('#wpopList').innerHTML=items.map(([id,q])=>{const p=BY[id]; return `<li>${p.img?`<img src="${IMG[p.img]}" alt="">`:'<i></i>'}<b>${p.name}</b><span class="num">${fmtL(p,q)}</span></li>`}).join('');
  $('#wpop').hidden=false; $('#wpop').focus();
 }
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
