@@ -230,6 +230,27 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 .bar.in{transform:none}
 .bar .btn{width:100%;justify-content:space-between}
 
+/* ---------- order progress (bottom) ---------- */
+.track{position:fixed;inset:auto 0 0 0;z-index:31;display:block;width:100%;text-align:right;padding:10px var(--gut-r) calc(10px + env(safe-area-inset-bottom,0px)) var(--gut);background:#141312;border-top:1px solid rgba(243,239,232,.14);color:#f3efe8;cursor:pointer}
+.track[hidden]{display:none}
+.tk-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;margin-bottom:8px}
+.tk-h b{font-weight:700}.tk-h span{color:#a39c93;font-size:13px}
+.track ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr)}
+.track li{position:relative;padding-top:16px;font-size:12px;color:#6e6860;text-align:center}
+.track li::before{content:"";position:absolute;top:0;right:50%;transform:translateX(50%);width:10px;height:10px;border-radius:50%;background:#3a3735;z-index:1}
+.track li+li::after{content:"";position:absolute;top:4px;left:50%;width:100%;height:2px;background:#3a3735}
+.track li.done,.track li.on{color:#f3efe8}
+.track li.done::before,.track li.done::after,.track li.on::after{background:#c4162a}
+.track li.on::before{background:#c4162a;box-shadow:0 0 0 4px rgba(196,22,42,.3);animation:tkPulse 1.6s ease-in-out infinite}
+.track.ready li.on::before{animation:none;background:#3fa36b;box-shadow:0 0 0 4px rgba(63,163,107,.3)}
+.track.ready li.on{color:#8fdcae;font-weight:700}
+@keyframes tkPulse{50%{box-shadow:0 0 0 7px rgba(196,22,42,.12)}}
+@media(prefers-reduced-motion:reduce){.track li.on::before{animation:none}}
+body.trk .bar{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body.trk .toast{bottom:calc(160px + env(safe-area-inset-bottom,0px))}
+body.trk .specbtn{bottom:calc(154px + env(safe-area-inset-bottom,0px))}
+body.trk .foot{padding-bottom:calc(172px + env(safe-area-inset-bottom,0px))}
+
 /* ---------- toast ---------- */
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bone);padding:10px 12px 10px 18px;border-radius:4px;display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap;transition:transform .35s cubic-bezier(.2,.9,.3,1.2),opacity .25s;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .toast.in{transform:translate(-50%,0);opacity:1;pointer-events:auto}
@@ -414,6 +435,10 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
   .foot{padding-bottom:28px}
   .toast{bottom:36px}
   .specbtn{bottom:24px}
+  .track{inset:auto auto 20px 20px;width:380px;border:1px solid rgba(243,239,232,.14);border-radius:6px}
+  body.trk .toast{bottom:36px}
+  body.trk .specbtn{bottom:24px}
+  body.trk .foot{padding-bottom:120px}
   .hero .btn{width:auto}
 }
 html.cine .hero{height:150vh}
@@ -581,6 +606,7 @@ html.cine .rail,html.cine .arrows{display:none}
 </section>
 </main>
 
+<button class="track" id="track" type="button" hidden aria-live="polite"><span class="tk-h"><b id="tkTitle"></b><span id="tkSub" class="num"></span></span><ol><li>התקבלה</li><li>בשקילה</li><li>מוכנה לאיסוף</li></ol></button>
 <div class="bar" id="bar"><button class="btn" data-open><span>שובר ההזמנה</span><span class="num" id="barCount">ריק</span></button></div>
 <div class="toast" id="toast" role="status"><span id="toastMsg"></span><button data-open>פתיחת השובר</button></div>
 
@@ -868,6 +894,7 @@ async function submitOrder(e){
   LS.set('casa_me',{name,phone,email,marketing:order.marketing,privacy:true});
   LS.set('casa_orders',[{id,t:tk,at:Date.now(),items:[...cart]},...history_()].slice(0,20));
   cart.clear(); renderCart(); f.elements.notes.value='';
+  setTimeout(showWelcome,400); // start the bottom progress bar
   $('#co').hidden=true;
   $('#coDone').innerHTML=`<div class="okm">✓</div><h3>ההזמנה התקבלה!</h3><p>מספר הזמנה <b class="num">#${id}</b></p>
    <p>המחיר הסופי עשוי להשתנות מעט בהתאם למשקל בפועל. אחרי השקילה נעדכן אותך שההזמנה מוכנה, עם הסכום הסופי.</p>
@@ -884,6 +911,16 @@ renderCart();
 async function lastStatus(o){
  if(!API||!o||!o.t) return null;
  try{const r=await fetch(API.replace(/\/api\/order$/,'/api/status/'+o.id)+'?t='+encodeURIComponent(o.t)); const j=await r.json(); return j.ok?j:null}catch(e){return null}
+}
+// bottom progress bar for an order that is not picked up yet: received -> being weighed -> ready
+let lastS=null;
+function renderTrack(o,s){
+ const on=!!(s&&(s.status==='new'||s.status==='ready')); lastS=on?s:null;
+ $('#track').hidden=!on; document.body.classList.toggle('trk',on); if(!on) return;
+ const ready=s.status==='ready'; $('#track').classList.toggle('ready',ready);
+ $('#tkTitle').textContent=ready?'ההזמנה שלך מוכנה לאיסוף':'ההזמנה שלך ממתינה לשקילה';
+ $('#tkSub').textContent='#'+s.id+(ready&&s.final?' · '+nis(s.final.total):'');
+ $('#track').querySelectorAll('li').forEach((li,i)=>{const at=ready?2:1; li.className=i<at?'done':i===at?'on':''});
 }
 function wpopMode(ready){$('#wpop').classList.toggle('ready',ready); $('#wpopAgain').textContent=ready?'מעולה, תודה!':'להזמין שוב את ההזמנה הזו'; $('#wpopSkip').hidden=ready}
 function showReady(me,s){
@@ -904,6 +941,7 @@ async function showWelcome(){
  const me=LS.get('casa_me',{}), o=history_()[0];
  if(!me.name||!o) return;
  const s=await lastStatus(o);
+ renderTrack(o,s);
  if(s&&s.status==='ready'&&s.final){ // ready beats everything: show it every visit until picked up
   if(anyOpen()) return; try{if(sessionStorage.getItem('casa_ready')==o.id) return; sessionStorage.setItem('casa_ready',o.id)}catch(e){}
   return showReady(me,s);
@@ -947,6 +985,7 @@ document.addEventListener('click',e=>{
  if(t.id==='wpopAgain'&&$('#wpop').classList.contains('ready')) return closeWelcome();
  if(t.id==='wpopAgain'){const o=history_()[0]; closeWelcome(); if(o) o.items.forEach(([id,q])=>{if(BY[id]) cart.set(id,q)}); renderCart(); return openDrawer()}
  if(t.id==='wpopSkip') return closeWelcome();
+ if(t.closest('#track')){const me=LS.get('casa_me',{}); if(lastS&&lastS.status==='ready'&&lastS.final&&me.name) return showReady(me,lastS); return}
  if(t.id==='coEdit'){$('#co').classList.remove('known'); return $('#co').elements.name.focus()}
  if(t.id==='gpopOk') return closeGift();
  if(t.id==='gpopCart'){closeGift(); return openDrawer()}
