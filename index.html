@@ -250,6 +250,7 @@ html.cine .hero-veil,.drawer{background:var(--coal) var(--tex) 0 0/1024px 1024px
 @keyframes tkPulse{50%{box-shadow:0 0 0 7px rgba(196,22,42,.12)}}
 @media(prefers-reduced-motion:reduce){.track li.on::before{animation:none}}
 body.trk .bar{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+body.trk .bar:not(.in),body.trk .bar.empty{transform:translateY(calc(100% + 100px))}
 body.trk .toast{bottom:calc(160px + env(safe-area-inset-bottom,0px))}
 body.trk .specbtn{bottom:calc(154px + env(safe-area-inset-bottom,0px))}
 body.trk .foot{padding-bottom:calc(172px + env(safe-area-inset-bottom,0px))}
@@ -860,7 +861,7 @@ const cart=new Map(), pick={};
 function count(){return cart.size}
 function renderCart(){
  const n=count(), b=$('#badge'); b.hidden=!n; b.textContent=n;
- $('#barCount').textContent=n?n+' פריטים':'ריק';
+ $('#barCount').textContent=n?n+' פריטים':'ריק'; $('#bar').classList.toggle('empty',!n);
  let sum=0, tbd=0, meat=0, disc=0;
  const rows=n?[...cart].map(([id,q])=>{const p=BY[id]; if(p.price!=null){sum+=p.price*q; if(!p.star) disc+=p.price*q; if(p.cat!=='extra') meat+=p.price*q} else tbd++;
   return `<li><div class="thumb ${p.img?tn(p):''}">${p.img?`<img src="${IMG[p.img]}" alt="">`:(p.cat==='extra'?'':'אין צילום')}</div>
@@ -989,10 +990,12 @@ async function showWelcome(){
  const s=await lastStatus(o);
  renderTrack(o,s);
  if(s&&s.status==='ready'&&s.final){ // ready beats everything: show it every visit until picked up
+  clearTimeout(statusT); statusT=setTimeout(showWelcome,60000); // keep checking until it is picked up
+  try{sessionStorage.setItem('casa_hi','1')}catch(e){}
   if(anyOpen()) return; try{if(sessionStorage.getItem('casa_ready')==o.id) return; sessionStorage.setItem('casa_ready',o.id)}catch(e){}
   return showReady(me,s);
  }
- if(s&&s.status==='new'){clearTimeout(statusT); statusT=setTimeout(showWelcome,60000); return} // still being weighed: no reorder offer, check again in a minute
+ if(s&&s.status==='new'){clearTimeout(statusT); statusT=setTimeout(showWelcome,20000); return} // still being weighed: no reorder offer, check again soon
  if(cart.size||anyOpen()) return;
  try{if(sessionStorage.getItem('casa_hi')) return; sessionStorage.setItem('casa_hi','1')}catch(e){}
  const items=o.items.filter(([id])=>BY[id]); if(!items.length) return;
@@ -1041,6 +1044,8 @@ function closeHistory(){$('#hist').hidden=true}
 function greet(){const me=LS.get('casa_me',{}), n=(me.name||'').split(' ')[0]; $('#hi').hidden=false; $('#hi').textContent=n?'שלום, '+n:'ההזמנות שלי'}
 greet();
 setTimeout(showWelcome,900);
+// phones pause timers in the background: check the order again the moment the customer comes back
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.body.classList.contains('trk')) showWelcome()});
 $('#resChk').addEventListener('change',renderCart);
 let toastT;
 function add(id,btn){
