@@ -364,6 +364,8 @@ body.trk .foot{padding-bottom:calc(172px + env(safe-area-inset-bottom,0px))}
 .wpop.ready .wlist li span+span{min-width:76px;text-align:left}
 .wlist li.sum b,.wlist li.sum span{font-size:18px;font-weight:900;color:#f3efe8}
 .wlist li.sum{border-bottom:0}
+.wlist li.pay{display:block;border:0;padding:2px 0 0;font-size:14px;color:#cfc8be;text-align:center}
+.wpop.ready .wlist li:not(.sum):not(.pay) b{font-size:15px}
 .hist .addon-box{max-height:calc(100dvh - 32px);overflow-y:auto;padding-top:22px;text-align:right;position:relative}
 .hist .addon-box>small,.hist h2{text-align:center;display:block}
 .hist .x{position:absolute;top:10px;left:12px;width:40px;height:40px;font-size:26px;color:#a39c93}
@@ -973,10 +975,12 @@ function showReady(me,s){
  $('#wpopImg').hidden=true;
  $('#wpopTitle').textContent='ההזמנה שלך מוכנה!';
  $('#wpopLast').innerHTML=`הזמנה <span class="num">#${s.id}</span> · אפשר לבוא לאסוף`;
- $('#wpopList').innerHTML=f.items.map(i=>`<li><b>${esc(i.name)}</b><span class="num">${esc(i.label)}</span><span class="num">${i.price!=null?nis(i.price):''}</span></li>`).join('')
-  +(s.gift?'<li><b>סט מנות ראשונות</b><span>מתנה</span></li>':'')
-  +(f.discount?`<li><b>הנחת תושב/ת אילת</b><span class="num" dir="ltr">−${nis(f.discount)}</span></li>`:'')
-  +`<li class="sum"><b>סכום סופי לפי שקילה</b><span class="num">${nis(f.total)}</span></li>`;
+ const pic=n=>{const p=Object.values(BY).find(p=>p.name===n), k=p&&p.img||(/לחמני/.test(n)?'bun':/ירקות/.test(n)?'veg':''); return k?`<img src="${IMG[k]}" alt="">`:'<i></i>'};
+ $('#wpopList').innerHTML=f.items.map(i=>`<li>${pic(i.name)}<b>${esc(i.name)}</b><span class="num">${esc(i.label)}</span><span class="num">${i.price!=null?nis(i.price):''}</span></li>`).join('')
+  +(s.gift?`<li><img src="${IMG.starters}" alt=""><b>סט מנות ראשונות</b><span>מתנה</span></li>`:'')
+  +(f.discount?`<li><i style="background:none"></i><b>הנחת תושב/ת אילת</b><span class="num" dir="ltr">−${nis(f.discount)}</span></li>`:'')
+  +`<li class="sum"><b>סכום סופי לפי שקילה</b><span class="num">${nis(f.total)}</span></li>`
+  +`<li class="pay">התשלום יתבצע באיסוף, בקצבייה.</li>`;
  $('#wpopNote').hidden=!f.note; $('#wpopNote').textContent=f.note;
  wpopMode(true); $('#wpop').hidden=false; $('#wpop').focus();
 }
